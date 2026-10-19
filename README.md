@@ -2,12 +2,44 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-> 🎉 欢迎使用与交流！有任何问题或想法欢迎提 Issue / PR。
+> 🎉 欢迎使用与交流！有任何问题或想法欢迎提 Issue / PR。 · [🇬🇧 English Overview](#-english-overview)
 > 开源协议：**[AGPL-3.0](#-license)**
 
 把 **freebuff/codebuff** 的免费模型暴露成 **OpenAI-compatible API**。单文件无依赖，**推荐 Docker 容器部署**（或自建 VPS 运行），适配任意 OpenAI SDK / 客户端（QwenPaw、Hermes、ChatGPT-Next-Web、LobeChat、one-api 等）。
 
 > ⚠️ **部署方式重要提示**：Freebuff 官方已检测 Cloudflare Worker 部署（识别 `cf-worker` / `cf-ray` 等边缘标记），**在 CF 上部署会显著增加账号被封禁的风险**。因此本项目**不推荐 Cloudflare 部署**，推荐使用 **Docker 容器**或自建 VPS 运行（见下方「[🐳 Docker 容器化部署](#-docker-容器化部署-推荐)」）。
+
+## 🇬🇧 English Overview
+
+**freebuff2api** exposes Freebuff / Codebuff's free models as an **OpenAI-compatible API**. Single-file worker, zero dependencies, Docker-first. Works with any OpenAI SDK or client (QwenPaw, Hermes, ChatGPT-Next-Web, LobeChat, one-api, ...).
+
+> ⚠️ **Deployment note**: Freebuff detects Cloudflare Worker deployments (`cf-worker` / `cf-ray` edge markers) and treats them as a foreign client — deploying on CF significantly raises the account-ban risk. **Docker / your own VPS is strongly recommended.**
+
+**Features**
+
+- OpenAI-compatible: `/v1/models`, `/v1/chat/completions`, `/v1/responses`, plus Anthropic `/v1/messages`
+- **Web admin panel** at `/admin` — bilingual (中文 / English) with a language toggle in the header, persisted in `localStorage`
+- **Account pool with one independent SOCKS5 egress per account**; edits apply immediately, no container restart
+- **Freebucks wallet visible**: daily balance, spend, price table and which models your remaining balance can afford today
+- Multi-account failover on quota exhaustion; the live session (~1 h) is reused before burning a new one
+
+**Quick start (Docker)**
+
+```bash
+docker run -d --name freebuff2api --restart unless-stopped \
+  -p 8877:8787 -e PORT=8787 -e HOST=0.0.0.0 \
+  -e FREEBUFF_API_KEY=your-api-key \
+  -v "$(pwd)/freebuff_credentials.json:/app/credentials/freebuff_credentials.json:ro" \
+  pingmike/freebuff2api:latest
+```
+
+Open `http://<server-ip>:8877/admin` (initial password `admin`, forced change on first login), paste tokens into the account pool and hit **Save accounts** — effective immediately.
+
+**Endpoints**: `GET /healthz` · `GET /v1/models` · `POST /v1/chat/completions` (Bearer `FREEBUFF_API_KEY`)
+
+**License**: AGPL-3.0. The detailed documentation below is in Chinese.
+
+---
 
 ## ✨ 特性
 
